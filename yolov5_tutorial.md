@@ -28,11 +28,26 @@ This is tensorrt c++ api implementation of yolov5.
     ```shell
     cp yolo-tensorrt/scripts/yaml2cfg.py yolov5/
     python yaml2cfg.py
-    mv yolov5/models/yolov5.cfg yolo-tensorrt/configs/yolov5-3.0
-    mv yolov5/weights/yolov5.weights yolo-tensorrt/configs/yolov5-3.0
+    mv yolov5/models/yolov5.cfg yolo-tensorrt/configs/yolov5-4.0
+    mv yolov5/weights/yolov5.weights yolo-tensorrt/configs/yolov5-4.0
     ```
     
     transformed models
+
+    |  model   |                             .cfg                             |                           .weights                           |
+    | :------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+    | yolov5s6 | [yolov5s6.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5s6.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov5m6 | [yolov5m6.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5m6.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov5l6 | [yolov5l6.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5l6.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov56  | [yolov5x6.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5x.6weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    
+    |    model     |                            .yaml                             |                             .pt                              |                             .cfg                             |                           .weights                           |
+    | :----------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+    | yolov5s-v4.0 | [yolov5s.yaml](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5s.pt](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5s.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5s.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov5m-v4.0 | [yolov5m.yaml](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5m.pt](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5m.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5m.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov5l-v4.0 | [yolov5l.yaml](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5l.pt](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5l.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5l.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    | yolov5x-v4.0 | [yolov5x.yaml](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5x.pt](https://github.com/ultralytics/yolov5/releases/tag/v4.0) | [yolov5x.cfg](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) | [yolov5x.weights](https://mega.nz/folder/7iYTSARZ#-T3xXHBjRAUhOwdEe_ajKw) |
+    
     
     |    model     |                            .yaml                             |                             .pt                              |                             .cfg                             |                           .weights                           |
     | :----------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |

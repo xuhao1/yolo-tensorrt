@@ -497,6 +497,40 @@ int make_division(const float f_in_, const int n_divisor_)
 	return ceil(f_in_ / n_divisor_)*n_divisor_;
 }
 
+void parse_c3_args(const std::string s_args_, int &n_out_ch_, bool &b_shourt_cut_)
+{
+	std::string s_args = s_args_;
+	while (!s_args.empty())
+	{
+		auto npos = s_args.find_first_of(',');
+		if (npos != std::string::npos)
+		{
+			n_out_ch_ = std::stoi(trim(s_args.substr(0, npos)));
+			s_args.erase(0, npos + 1);
+		}
+		else
+		{
+			try
+			{
+				n_out_ch_ = std::stoi(trim(s_args.substr(0, npos)));
+			}
+			catch (const std::exception&)
+			{
+
+			}
+			if ("False" == trim(s_args))
+			{
+				b_shourt_cut_ = false;
+			}
+			else if ("True" == trim(s_args))
+			{
+				b_shourt_cut_ = true;
+			}
+			break;
+		}
+	}
+}
+
 void parse_bottleneck_args(const std::string s_args_, int &n_out_ch_, bool &b_shourt_cut_)
 {
 	std::string s_args = s_args_;
@@ -704,6 +738,24 @@ void Yolo::create_engine_yolov5(const nvinfer1::DataType dataType,
 			tensorOutputs.push_back(out->getOutput(0));
 			printLayerInfo(layerIndex, "Conv", inputVol, outputVol, "");
 		}//end Conv
+		else if ("C3" == m_configBlocks.at(i).at("type"))
+		{
+			std::string inputVol = dimsToString(previous->getDimensions());
+			int filters = 0;
+			bool short_cut =true;
+			int number = std::stoi(m_configBlocks[i]["number"]);
+			parse_bottleneck_args(m_configBlocks[i]["args"], filters, short_cut);
+			int n_out_channel = (n_output != filters) ? make_division(filters*_f_width_multiple, 8) : filters;
+			int n_depth = (number > 1) ? (std::max(int(round(_f_depth_multiple *number)), 1)) : number;
+			std::string s_model_name = "model." + std::to_string(i- 1);
+			auto out = C3(trtWeights,s_model_name, model_wts, m_Network, previous, n_out_channel, n_depth, short_cut);
+			previous = out->getOutput(0);
+			assert(previous != nullptr);
+			channels = getNumChannels(previous);
+			std::string outputVol = dimsToString(previous->getDimensions());
+			tensorOutputs.push_back(out->getOutput(0));
+			printLayerInfo(layerIndex, "C3", inputVol, outputVol, "");
+		}// end C3
 		else if ("BottleneckCSP" == m_configBlocks.at(i).at("type"))
 		{
 			std::string inputVol = dimsToString(previous->getDimensions());
@@ -964,7 +1016,7 @@ std::vector<std::map<std::string, std::string>> Yolo::parseConfigFile(const std:
 
     while (getline(file, line))
     {
-        if (line.empty()) continue;
+        if (line.empty() || line == "\r") continue;
         if (line.front() == '#') continue;
         line = trim(line);
         if (line.front() == '[')
@@ -1001,10 +1053,12 @@ void Yolo::parseConfigBlocks()
             assert((block.find("width") != block.end()) && "Missing 'width' param in network cfg");
             assert((block.find("channels") != block.end())
                    && "Missing 'channels' param in network cfg");
+            assert((block.find("batch") != block.end())
+                   && "Missing 'batch' param in network cfg");
 
-            m_InputH = std::stoul(block.at("height"));
-            m_InputW = std::stoul(block.at("width"));
-            m_InputC = std::stoul(block.at("channels"));
+            m_InputH = std::stoul(trim(block.at("height")));
+            m_InputW = std::stoul(trim(block.at("width")));
+            m_InputC = std::stoul(trim(block.at("channels")));
 			m_BatchSize = std::stoi(trim(block.at("batch")));
          //   assert(m_InputW == m_InputH);
             m_InputSize = m_InputC * m_InputH * m_InputW;
@@ -1175,13 +1229,20 @@ void Yolo::parse_cfg_blocks_v5(const  std::vector<std::map<std::string, std::str
 				outputTensor.numBBoxes = static_cast<uint32_t>(outputTensor.masks.size());
 				outputTensor.numClasses = _n_classes;
 				outputTensor.blobName = "yolo_" + std::to_string(i);
-				outputTensor.grid_h = (m_InputH / 32) * pow(2 ,2-i);
-				outputTensor.grid_w = (m_InputW / 32) * pow(2 ,2-i);
+				if (i < 3)
+				{
+					outputTensor.grid_h = (m_InputH / 32) * pow(2 ,2-i);
+					outputTensor.grid_w = (m_InputW / 32) * pow(2 ,2-i);
+				}
+				else
+				{
+					outputTensor.grid_h = (m_InputH / 32) /2;
+					outputTensor.grid_w = (m_InputW / 32) /2;
+				}
 				outputTensor.stride_h = m_InputH / outputTensor.grid_h;
 				outputTensor.stride_w = m_InputW / outputTensor.grid_w;
 				outputTensor.volume = outputTensor.grid_h * outputTensor.grid_w
 					*(outputTensor.numBBoxes*(5 + outputTensor.numClasses));
-
 				m_OutputTensors.push_back(outputTensor);
 
 				if (m_ClassNames.empty())
@@ -1195,6 +1256,7 @@ void Yolo::parse_cfg_blocks_v5(const  std::vector<std::map<std::string, std::str
 			
 		}
 	}
+	std::cout << "Config Done!" << std::endl;
 }
 void Yolo::allocateBuffers()
 {

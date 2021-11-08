@@ -28,7 +28,7 @@ int main()
 	config_v4.file_model_cfg = "../configs/yolov4.cfg";
 	config_v4.file_model_weights = "../configs/yolov4.weights";
 	config_v4.calibration_image_list_file_txt = "../configs/calibration_images.txt";
-	config_v4.inference_precison =INT8;
+	config_v4.inference_precison = FP32;
 	config_v4.detect_thresh = 0.5;
 
 	Config config_v4_tiny;
@@ -42,8 +42,9 @@ int main()
 	Config config_v5;
 	config_v5.net_type = YOLOV5;
 	config_v5.detect_thresh = 0.5;
-	config_v5.file_model_cfg = "../configs/yolov5-3.0/yolov5s.cfg";
-	config_v5.file_model_weights = "../configs/yolov5-3.0/yolov5s.weights";
+	config_v5.file_model_cfg = "../configs/yolov5-5.0/yolov5s6.cfg";
+	config_v5.file_model_weights = "../configs/yolov5-5.0/yolov5s6.weights";
+	config_v5.calibration_image_list_file_txt = "../configs/calibration_images.txt";
 	config_v5.inference_precison = FP32;
 
 	std::unique_ptr<Detector> detector(new Detector());
@@ -77,6 +78,7 @@ int main()
 				stream << std::fixed << std::setprecision(2) << "id:" << r.id << "  score:" << r.prob;
 				cv::putText(batch_img[i], stream.str(), cv::Point(r.rect.x, r.rect.y - 5), 0, 0.5, cv::Scalar(0, 0, 255), 2);
 			}
+			cv::namedWindow("image" + std::to_string(i), cv::WINDOW_NORMAL);
 			cv::imshow("image"+std::to_string(i), batch_img[i]);
 		}
 		cv::waitKey(10);
