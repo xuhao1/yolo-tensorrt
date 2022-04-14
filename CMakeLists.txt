@@ -27,5 +27,4 @@ add_executable(yolo-trt samples/sample_detector.cpp)
 target_include_directories(yolo-trt PRIVATE modules/ extra/)
 target_link_libraries(yolo-trt detector ${OpenCV_LIBS})
 
-
-
+install(TARGETS detector DESTINATION /usr/local/lib)
